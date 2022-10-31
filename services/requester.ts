@@ -25,7 +25,7 @@ export default class Requester<T extends IApi> {
     const newUrl = this.url + '?' + Object.entries(payload).map(([k, v]) => `${k}=${v}`).join('&')
     return fetch(newUrl, {
       method: 'GET',
-
+      credentials: 'include',
     }).then(res => res.json())
   }
 }

@@ -74,7 +74,7 @@ export default function Home() {
 
   return (
     <>
-      <div className='h-screen w-screen bg-bg_light dark:bg-bg_dark bg-cover flex justify-center items-center min-w-max'>
+      <div className='h-screen w-screen bg-bg_light dark:bg-bg_dark bg-cover flex justify-center items-center'>
         <div className='relative top-[-5vh] md:static md:top-none shadow-xl p-8 md:p-12 bg-white dark:bg-black m-6 w-full max-w-[450px] md:max-w-none rounded-xl flex flex-col justify-between md:flex-row md:items-center md:w-[893px] md:h-[552px] md:rounded-2xl'>
           <div className='h-[100px] md:h-full bg-contain bg-no-repeat relative bg-illustrator_s bg-[right_-40px_top] md:w-[360px] md:bg-illustrator_l md:bg-bottom'>
             <div>
