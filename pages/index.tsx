@@ -50,7 +50,7 @@ export default function Home() {
         toast.error('无效 Ticket')
         return
       }
-      window.location.href = `${clientURL.current}?ticket=${res.data.ticket}`
+      window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${res.data.ticket}`)}`
     }).catch(e => {
       toast.error(`登录失败 ${e}`)
     })
