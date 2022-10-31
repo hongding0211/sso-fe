@@ -1,13 +1,14 @@
-import React, {ChangeEvent, HTMLInputTypeAttribute} from "react";
+import React, {ChangeEvent, forwardRef, HTMLInputTypeAttribute, Ref} from "react";
 
 interface IInput {
   label?: string
   type?: HTMLInputTypeAttribute
   value: string
   onChange: (e: string) => void
+  ref?: HTMLInputElement
 }
 
-const Input: React.FunctionComponent<IInput> = props => {
+const Input: React.ForwardRefExoticComponent<React.PropsWithoutRef<IInput> & React.RefAttributes<HTMLInputElement>> = forwardRef<HTMLInputElement, IInput>(function Input (props, ref) {
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     props.onChange(e.target.value)
   }
@@ -39,9 +40,10 @@ const Input: React.FunctionComponent<IInput> = props => {
         type={props.type}
         value={props.value}
         onInput={handleInputChange}
+        ref={ref}
       />
     </>
   )
-}
+})
 
 export default Input
