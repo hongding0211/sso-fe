@@ -21,7 +21,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const found = /\?client=(\S+)/g.exec(document.location.search)
+    const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
     if (found !== null) {
       clientURL.current = found[1]
     }
