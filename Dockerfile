@@ -8,7 +8,7 @@ WORKDIR /home/node/app
 
 COPY ./ /home/node/app
 
-RUN npm config set registry https://registry.npmmirror.com
+RUN npm config set registry http://mirrors.cloud.tencent.com/npm/
 RUN npm install
 RUN npm run build
 
