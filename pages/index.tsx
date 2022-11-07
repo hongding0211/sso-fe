@@ -1,35 +1,46 @@
 import Head from "next/head";
 import Login from '../components/home/login'
 import Register from "../components/register/register";
-import {Text} from "@nextui-org/react";
-import {createElement, FunctionComponentElement, useState} from "react";
+import {Modal, Text} from "@nextui-org/react";
+import {useEffect, useRef, useState} from "react";
+import {IPostApiRegister} from "../services/types";
+import toast from "react-hot-toast";
+import Image from "next/image";
+import logo from '../public/logo.png'
 
 export default function Home() {
-  const loginComponent = createElement(Login, {
-    onRegister: handleRegister,
-    onLoggedIn: handleLoggedIn,
-  })
-  const registerComponent = createElement(Register, {
-    onBack: handleRegisterBack,
-    onRegistered: handleRegistered
-  })
+  const [showRegister, setShowRegister] = useState(false)
+  const [registeredData, setRegisteredData] = useState<IPostApiRegister['IRes']['data'] | undefined>(undefined)
+  const [showAboutModal, setShowAboutModal] = useState(true)
 
-  const [currentComponent, setCurrentComponent] = useState<FunctionComponentElement<any>>(loginComponent)
+  const clientURL = useRef('')
+
+  useEffect(() => {
+    const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
+    if (found !== null) {
+      clientURL.current = found[1]
+    }
+  }, [])
 
   function handleRegister() {
-    setCurrentComponent(registerComponent)
+    setShowRegister(true)
   }
 
-  function handleLoggedIn() {
-    // TODO
+  function handleLoggedIn(ticket: string) {
+    toast.success('登录成功')
+    if (clientURL.current === '') {
+      return
+    }
+    window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
   }
 
   function handleRegisterBack() {
-    setCurrentComponent(loginComponent)
+    setShowRegister(false)
   }
 
-  function handleRegistered() {
-    // TODO
+  function handleRegistered(data: IPostApiRegister['IRes']['data']) {
+    setShowRegister(false)
+    setRegisteredData(data)
   }
 
   return (
@@ -53,13 +64,42 @@ export default function Home() {
             </div>
           </div>
           <div className='flex flex-col h-min justify-between md:w-[50%] md:h-full'>
-            { currentComponent }
+            {
+              showRegister ?
+                <Register onBack={handleRegisterBack} onRegistered={handleRegistered} /> :
+                <Login onRegister={handleRegister} onLoggedIn={handleLoggedIn} registeredData={registeredData} />
+            }
           </div>
         </div>
-        <footer className='absolute bottom-4 md:bottom-6'>
-          <span className='text-sm text-zinc-600 dark:text-zinc-400'>Copyright © {`${new Date(Date.now()).getFullYear()}`} SSO <a className='underline' target='_blank' href='https://hong97.ltd' rel="noreferrer">hong97.ltd</a></span>
+        <footer className='absolute bottom-4 md:bottom-6 text-sm text-zinc-400'>
+          <span>
+            <span>Copyright © {`${new Date(Date.now()).getFullYear()}`} </span>
+            <a target='_blank' href='https://hong97.ltd' rel="noreferrer">hong97.ltd</a>
+            <span> | </span>
+          </span>
+          <span onClick={() => setShowAboutModal(true)} className='cursor-pointer'>About SSO</span>
         </footer>
       </div>
+
+      <Modal
+        open={showAboutModal}
+        blur
+        closeButton
+        onClose={() => setShowAboutModal(false)}
+      >
+        <Modal.Body>
+          <div className='flex py-2 w-full justify-between items-center'>
+            <div className='text-zinc-900 dark:text-zinc-200  text-sm'>
+              <p className='font-medium text-lg'>Single Sign On</p>
+              <p className='mb-4'>Build with Next.js</p>
+              <a target='_blank' href='https://github.com/hongding0211/sso-fe' className='text-zinc-400 underline' rel="noreferrer">Github Repo</a>
+            </div>
+            <div className='w-[64px] mr-2'>
+              <Image src={logo} fill alt='logo'/>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }

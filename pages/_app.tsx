@@ -10,6 +10,7 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   type: 'dark',
 })
+
 export default function App({ Component, pageProps }: AppProps) {
   const darkMode = useDarkMode(false)
 
@@ -18,7 +19,12 @@ export default function App({ Component, pageProps }: AppProps) {
       theme={darkMode.value ? darkTheme : lightTheme}
     >
       <Component {...pageProps} />
-      <Toaster />
+      <Toaster toastOptions={{
+        style: {
+          color: darkMode.value ? 'white' : 'black',
+          background: darkMode.value ? '#232325' : 'white',
+        }
+      }}/>
     </NextUIProvider>
   )
 }

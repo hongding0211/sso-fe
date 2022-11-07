@@ -1,6 +1,6 @@
-import {Avatar, Button, Input, Spacer, Loading} from "@nextui-org/react"
+import {Avatar, Button, Input, Loading, Spacer} from "@nextui-org/react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faUpload, faUser, faChevronLeft} from "@fortawesome/free-solid-svg-icons"
+import {faChevronLeft, faUpload, faUser} from "@fortawesome/free-solid-svg-icons"
 import React, {ChangeEvent, useRef, useState} from "react";
 import toast from "react-hot-toast";
 import shajs from 'sha.js'
@@ -10,7 +10,7 @@ import {APIS, UPLOAD_SECRET} from "../../services/config";
 
 type IRegister = {
   onBack: () => void
-  onRegistered: () => void
+  onRegistered: (data: IPostApiRegister['IRes']['data']) => void
 }
 
 const Register: React.FunctionComponent<IRegister> = props =>  {
@@ -19,12 +19,16 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [pending, setPending] = useState(false)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleUpload() {
     if (uploading) {
       toast.error('文件上传中')
+      return
+    }
+    if (pending) {
       return
     }
     if (inputRef.current?.click) {
@@ -80,9 +84,11 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
       return
     }
 
-    const hashedPassword = shajs('sha256').update(emailPhone).digest('hex')
+    const hashedPassword = shajs('sha256').update(password).digest('hex')
 
     const requester = new Requester<IPostApiRegister>(APIS.POST_REGISTER)
+
+    setPending(true)
 
     requester.post({
       email,
@@ -93,12 +99,14 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
     }).then(v => {
       if (v.success) {
         toast.success('注册成功')
+        props.onRegistered(v.data)
       } else {
         toast.error(v?.msg || '注册失败')
       }
-      // TODO
     }).catch(() => {
       toast.error('注册失败')
+    }).finally(() => {
+      setPending(false)
     })
   }
 
@@ -154,14 +162,16 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
             uploading &&
             <>
               <Spacer x={1}/>
-              <Loading size='sm'/>
+              <Loading color="currentColor" size='sm'/>
             </>
           }
         </div>
         <Spacer y={2}/>
       </div>
 
-      <Button color='primary' onPress={handleRegister} disabled={uploading}>注册</Button>
+      <Button color='primary' onPress={handleRegister} disabled={uploading || pending} shadow>
+        {pending ? <Loading type="points" color="currentColor" size="sm" /> : <span>注册</span>}
+      </Button>
 
       <input
         type='file'

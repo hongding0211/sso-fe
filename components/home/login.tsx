@@ -1,20 +1,21 @@
-import React, {createRef, KeyboardEvent, useEffect, useRef, useState} from "react";
+import React, {createRef, KeyboardEvent, useEffect, useState} from "react";
 import Requester from "../../services/requester";
-import {IPostApiLogin} from "../../services/types";
+import {IPostApiLogin, IPostApiRegister} from "../../services/types";
 import {APIS} from "../../services/config";
 import toast from "react-hot-toast";
-import {Button, Input} from "@nextui-org/react";
+import {Button, Input, Loading} from "@nextui-org/react";
+import shajs from "sha.js";
 
 type ILogin = {
   onRegister: () => void
-  onLoggedIn: () => void
+  onLoggedIn: (ticket: string) => void
+  registeredData?: IPostApiRegister['IRes']['data']
 }
 
 const Login: React.FunctionComponent<ILogin> = props =>  {
-  const [emailInput, setEmailInput] = useState('')
+  const [emailInput, setEmailInput] = useState(props.registeredData?.email || props.registeredData?.phone || '' )
   const [passwordInput, setPasswordInput] = useState('')
-
-  const clientURL = useRef('')
+  const [pending, setPending] = useState(false)
 
   const emailInputRef = createRef<HTMLInputElement>()
 
@@ -24,12 +25,7 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     }
   }, [])
 
-  useEffect(() => {
-    const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
-    if (found !== null) {
-      clientURL.current = found[1]
-    }
-  }, [])
+
 
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.code === 'Enter') {
@@ -44,23 +40,27 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
       toast.error('邮箱 / 电话格式错误')
       return
     }
+    if (!passwordInput) {
+      toast.error('密码为空')
+      return
+    }
+    const hashedPassword = shajs('sha256').update(passwordInput).digest('hex')
     const req = new Requester<IPostApiLogin>(APIS.POST_LOGIN)
+    setPending(true)
     req.post({
       email,
       phone,
-      password: passwordInput,
+      password: hashedPassword,
     }).then(res => {
       if (!res.success || !res?.data ) {
-        toast.error(`登录失败 ${res.msg}`)
+        toast.error(res?.msg || '登录失败')
         return
       }
-      if (clientURL.current === '') {
-        toast.success('登录成功')
-        return
-      }
-      window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${res.data.ticket}`)}`
+      props.onLoggedIn(res.data.ticket)
     }).catch(e => {
       toast.error(`登录失败 ${e}`)
+    }).finally(() => {
+      setPending(false)
     })
   }
 
@@ -83,8 +83,12 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
         </div>
       </div>
       <div className='flex flex-col w-full gap-y-4'>
-        <Button onClick={handleClickLogin} color='primary'>登录</Button>
-        <Button onClick={handleClickRegister} bordered>注册</Button>
+        <Button onClick={handleClickLogin} color='primary' shadow disabled={pending}>
+          {
+            pending ? <Loading type="points" color="currentColor" size="sm" /> : <span>登录</span>
+          }
+        </Button>
+        <Button onClick={handleClickRegister} bordered disabled={pending}>注册</Button>
       </div>
     </>
   )
