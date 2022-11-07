@@ -25,8 +25,6 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     }
   }, [])
 
-
-
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.code === 'Enter') {
       handleClickLogin()

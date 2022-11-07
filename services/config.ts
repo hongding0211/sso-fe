@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://127.0.0.1:3000'
+export const BASE_URL = 'https://hong97.ltd/sso'
 
 export const APIS = {
   POST_LOGIN: `${BASE_URL}/api/login`,

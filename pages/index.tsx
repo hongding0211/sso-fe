@@ -1,12 +1,26 @@
 import Head from "next/head";
 import Login from '../components/home/login'
 import Register from "../components/register/register";
-import {Modal, Text} from "@nextui-org/react";
+import {createTheme, Modal, NextUIProvider, Text} from "@nextui-org/react";
 import {useEffect, useRef, useState} from "react";
-import {IPostApiRegister} from "../services/types";
-import toast from "react-hot-toast";
+import {IGetApiUserInfo, IPostApiRegister, IPostApiValidate} from "../services/types";
 import Image from "next/image";
 import logo from '../public/logo.png'
+import useDarkMode from "use-dark-mode";
+import {useRouter} from "next/router";
+import Requester from "../services/requester";
+import {APIS} from "../services/config";
+import {Message} from "@arco-design/web-react";
+import {useDispatch} from "react-redux";
+import {setUser} from "../features/userSlice";
+
+const lightTheme = createTheme({
+  type: 'light',
+})
+const darkTheme = createTheme({
+  type: 'dark',
+})
+
 
 export default function Home() {
   const [showRegister, setShowRegister] = useState(false)
@@ -15,23 +29,73 @@ export default function Home() {
 
   const clientURL = useRef('')
 
+  const darkMode = useDarkMode(false)
+  const router = useRouter()
+  const dispatch = useDispatch()
+
   useEffect(() => {
     const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
     if (found !== null) {
       clientURL.current = found[1]
+      return
     }
+
+    // 尝试检查 token，如果核验成功直接跳转
+    const authToken = localStorage.getItem('auth-token')
+    if (!authToken) {
+      return
+    }
+
+    getUserInfo(authToken)
+      .then(() => router.push('/my'))
+      .then()
+
   }, [])
+
+  function getUserInfo(authToken: string) {
+    const requester = new Requester<IGetApiUserInfo>(APIS.GET_USR_INFO)
+    return requester.get({
+      authToken,
+    }).then(v => {
+      if (v?.success === true && v?.data) {
+        dispatch(setUser({
+          ...v.data
+        }))
+        return
+      } else {
+        localStorage.removeItem('auth-token')
+        return Promise.reject('invalid token')
+      }
+    })
+  }
 
   function handleRegister() {
     setShowRegister(true)
   }
 
   function handleLoggedIn(ticket: string) {
-    toast.success('登录成功')
-    if (clientURL.current === '') {
+    if (clientURL.current !== '') {
+      window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
       return
     }
-    window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
+
+    const requester = new Requester<IPostApiValidate>(APIS.POST_VALIDATE)
+
+    requester.post({
+      ticket,
+    }).then(v => {
+      if (v?.success === true && v?.data?.authToken) {
+        Message.success('登录成功')
+        localStorage.setItem('auth-token', v.data.authToken)
+        getUserInfo(v.data.authToken)
+          .then(() => router.push('/my'))
+          .catch(e => Message.error(`${e}`))
+      } else {
+        Message.error('无效 Ticket')
+      }
+    }).catch(e => {
+      Message.error(`登录失败：${e.message}`)
+    })
   }
 
   function handleRegisterBack() {
@@ -44,7 +108,9 @@ export default function Home() {
   }
 
   return (
-    <>
+    <NextUIProvider
+      theme={darkMode.value ? darkTheme : lightTheme}
+    >
       <Head>
         <title>SSO 统一登录</title>
       </Head>
@@ -100,6 +166,6 @@ export default function Home() {
           </div>
         </Modal.Body>
       </Modal>
-    </>
+    </NextUIProvider>
   )
 }
