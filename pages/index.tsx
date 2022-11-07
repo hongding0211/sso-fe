@@ -11,7 +11,7 @@ import logo from '../public/logo.png'
 export default function Home() {
   const [showRegister, setShowRegister] = useState(false)
   const [registeredData, setRegisteredData] = useState<IPostApiRegister['IRes']['data'] | undefined>(undefined)
-  const [showAboutModal, setShowAboutModal] = useState(true)
+  const [showAboutModal, setShowAboutModal] = useState(false)
 
   const clientURL = useRef('')
 
@@ -95,7 +95,7 @@ export default function Home() {
               <a target='_blank' href='https://github.com/hongding0211/sso-fe' className='text-zinc-400 underline' rel="noreferrer">Github Repo</a>
             </div>
             <div className='w-[64px] mr-2'>
-              <Image src={logo} fill alt='logo'/>
+              <Image src={logo} layout='intrinsic' alt='logo'/>
             </div>
           </div>
         </Modal.Body>
