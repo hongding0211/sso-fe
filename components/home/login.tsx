@@ -50,7 +50,9 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     req.post({
       email,
       phone,
-      password: hashedPassword,
+      password: shajs('sha256')
+        .update(`${Math.floor(Date.now() / 60000) - 1}${hashedPassword}`)
+        .digest('hex'),
     }).then(res => {
       if (!res.success || !res?.data ) {
         toast.error(res?.msg || '登录失败')
