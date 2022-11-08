@@ -1,7 +1,7 @@
 <br />
 <p align='center'>
   <a href="https://hong97.ltd/sso" target="blank"><img src='public/logo2.png' width=150></a>
-  <h2 align='center' style='font-weight:600'>Single Sign On 统一验证平台</h2>
+  <h3 align='center' style='font-weight:600'>Single Sign On 统一验证平台</h3>
   <p align="center">
     <a href="https://hong97.ltd/sso" target="blank"><strong>🌈 Try it out</strong></a>
     <br />
