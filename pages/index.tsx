@@ -41,7 +41,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (userInfo !== undefined) {
+    if (userInfo) {
       Message.success('登录成功')
       router.push('/my')
     }

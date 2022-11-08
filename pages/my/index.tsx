@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Head from 'next/head'
-import {Avatar, Breadcrumb, Dropdown, Layout, Menu, PageHeader} from '@arco-design/web-react';
+import {Avatar, Breadcrumb, Dropdown, Layout, Menu, Message, PageHeader} from '@arco-design/web-react';
 import "@arco-design/web-react/dist/css/arco.css"
-import {menu} from './config'
 import Image from "next/image";
 import logo from '../../public/logo2.png'
 import {IconUser} from "@arco-design/web-react/icon";
@@ -16,11 +15,26 @@ const Header = Layout.Header;
 const Footer = Layout.Footer;
 const Content = Layout.Content;
 
+const menu = [
+  {
+    key: 'userInfo',
+    icon: IconUser,
+    title: '我的信息',
+  }
+]
+
 export default function My() {
   const [currentMenuItem, setCurrentMenuItem] = useState(menu[0])
 
   const router = useRouter()
   const [userInfo, fetchUserInfo] = useUserInfo()
+
+  useEffect(() => {
+    if (userInfo === null) {
+      Message.error('未登录')
+      router.push('/').then()
+    }
+  }, [userInfo])
 
   function handleClickMenuItem(key: string) {
     const i = menu.find(e => e.key === key)
