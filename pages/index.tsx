@@ -3,7 +3,7 @@ import Login from '../components/home/login'
 import Register from "../components/register/register";
 import {createTheme, Modal, NextUIProvider, Text} from "@nextui-org/react";
 import {useEffect, useRef, useState} from "react";
-import {IGetApiUserInfo, IPostApiRegister, IPostApiValidate} from "../services/types";
+import {IPostApiRegister, IPostApiValidate} from "../services/types";
 import Image from "next/image";
 import logo from '../public/logo.png'
 import useDarkMode from "use-dark-mode";
@@ -11,8 +11,7 @@ import {useRouter} from "next/router";
 import Requester from "../services/requester";
 import {APIS} from "../services/config";
 import {Message} from "@arco-design/web-react";
-import {useDispatch} from "react-redux";
-import {setUser} from "../features/userSlice";
+import {useUserInfo} from "../hooks/user";
 
 const lightTheme = createTheme({
   type: 'light',
@@ -31,7 +30,7 @@ export default function Home() {
 
   const darkMode = useDarkMode(false)
   const router = useRouter()
-  const dispatch = useDispatch()
+  const [userInfo] = useUserInfo()
 
   useEffect(() => {
     const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
@@ -39,35 +38,14 @@ export default function Home() {
       clientURL.current = found[1]
       return
     }
-
-    // 尝试检查 token，如果核验成功直接跳转
-    const authToken = localStorage.getItem('auth-token')
-    if (!authToken) {
-      return
-    }
-
-    getUserInfo(authToken)
-      .then(() => router.push('/my'))
-      .then()
-
   }, [])
 
-  function getUserInfo(authToken: string) {
-    const requester = new Requester<IGetApiUserInfo>(APIS.GET_USR_INFO)
-    return requester.get({
-      authToken,
-    }).then(v => {
-      if (v?.success === true && v?.data) {
-        dispatch(setUser({
-          ...v.data
-        }))
-        return
-      } else {
-        localStorage.removeItem('auth-token')
-        return Promise.reject('invalid token')
-      }
-    })
-  }
+  useEffect(() => {
+    if (userInfo !== undefined) {
+      Message.success('登录成功')
+      router.push('/my')
+    }
+  }, [userInfo])
 
   function handleRegister() {
     setShowRegister(true)
@@ -87,9 +65,7 @@ export default function Home() {
       if (v?.success === true && v?.data?.authToken) {
         Message.success('登录成功')
         localStorage.setItem('auth-token', v.data.authToken)
-        getUserInfo(v.data.authToken)
-          .then(() => router.push('/my'))
-          .catch(e => Message.error(`${e}`))
+        router.push('/my')
       } else {
         Message.error('无效 Ticket')
       }
