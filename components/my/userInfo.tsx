@@ -6,7 +6,7 @@ import EditAvatar from "./editAvatar";
 import ModifyPassword from "./modifyPassword";
 
 interface IUserInfo {
-  userInfo?: UserInfo
+  userInfo?: UserInfo | null
   onUpdate: () => void
 }
 

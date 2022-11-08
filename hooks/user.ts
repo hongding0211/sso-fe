@@ -10,8 +10,8 @@ export interface UserInfo {
   avatar?: string
 }
 
-export function useUserInfo(): [UserInfo | undefined, () => void] {
-  const [user, setUser] = useState<UserInfo | undefined>(undefined)
+export function useUserInfo(): [UserInfo | undefined | null, () => void] {
+  const [user, setUser] = useState<UserInfo | undefined | null>(undefined)
 
   function fetch() {
     const authToken = localStorage.getItem('auth-token')
@@ -28,8 +28,10 @@ export function useUserInfo(): [UserInfo | undefined, () => void] {
         }
         return Promise.reject()
       }).catch(() => {
-        setUser(undefined)
+        setUser(null)
       })
+    } else {
+      setUser(null)
     }
   }
 
