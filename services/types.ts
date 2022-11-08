@@ -57,12 +57,3 @@ export interface IGetApiUserInfo extends IApi {
     avatar: string
   }>
 }
-
-export interface IPostUpload extends IApi {
-  IReq: {
-    file: File
-  }
-  IRes: {
-    url: string
-  }
-}

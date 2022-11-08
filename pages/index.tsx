@@ -1,37 +1,77 @@
 import Head from "next/head";
 import Login from '../components/home/login'
 import Register from "../components/register/register";
-import {Modal, Text} from "@nextui-org/react";
+import {createTheme, Modal, NextUIProvider, Text} from "@nextui-org/react";
 import {useEffect, useRef, useState} from "react";
-import {IPostApiRegister} from "../services/types";
-import toast from "react-hot-toast";
+import {IPostApiRegister, IPostApiValidate} from "../services/types";
 import Image from "next/image";
 import logo from '../public/logo.png'
+import useDarkMode from "use-dark-mode";
+import {useRouter} from "next/router";
+import Requester from "../services/requester";
+import {APIS} from "../services/config";
+import {Message} from "@arco-design/web-react";
+import {useUserInfo} from "../hooks/user";
+
+const lightTheme = createTheme({
+  type: 'light',
+})
+const darkTheme = createTheme({
+  type: 'dark',
+})
+
 
 export default function Home() {
   const [showRegister, setShowRegister] = useState(false)
   const [registeredData, setRegisteredData] = useState<IPostApiRegister['IRes']['data'] | undefined>(undefined)
-  const [showAboutModal, setShowAboutModal] = useState(true)
+  const [showAboutModal, setShowAboutModal] = useState(false)
 
   const clientURL = useRef('')
+
+  const darkMode = useDarkMode(false)
+  const router = useRouter()
+  const [userInfo] = useUserInfo()
 
   useEffect(() => {
     const found = /\?client=(\S+)/g.exec(decodeURIComponent(document.location.search))
     if (found !== null) {
       clientURL.current = found[1]
+      return
     }
   }, [])
+
+  useEffect(() => {
+    if (userInfo !== undefined) {
+      Message.success('登录成功')
+      router.push('/my')
+    }
+  }, [userInfo])
 
   function handleRegister() {
     setShowRegister(true)
   }
 
   function handleLoggedIn(ticket: string) {
-    toast.success('登录成功')
-    if (clientURL.current === '') {
+    if (clientURL.current !== '') {
+      window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
       return
     }
-    window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
+
+    const requester = new Requester<IPostApiValidate>(APIS.POST_VALIDATE)
+
+    requester.post({
+      ticket,
+    }).then(v => {
+      if (v?.success === true && v?.data?.authToken) {
+        Message.success('登录成功')
+        localStorage.setItem('auth-token', v.data.authToken)
+        router.push('/my')
+      } else {
+        Message.error('无效 Ticket')
+      }
+    }).catch(e => {
+      Message.error(`登录失败：${e.message}`)
+    })
   }
 
   function handleRegisterBack() {
@@ -44,7 +84,9 @@ export default function Home() {
   }
 
   return (
-    <>
+    <NextUIProvider
+      theme={darkMode.value ? darkTheme : lightTheme}
+    >
       <Head>
         <title>SSO 统一登录</title>
       </Head>
@@ -95,11 +137,11 @@ export default function Home() {
               <a target='_blank' href='https://github.com/hongding0211/sso-fe' className='text-zinc-400 underline' rel="noreferrer">Github Repo</a>
             </div>
             <div className='w-[64px] mr-2'>
-              <Image src={logo} fill alt='logo'/>
+              <Image src={logo} layout='intrinsic' alt='logo'/>
             </div>
           </div>
         </Modal.Body>
       </Modal>
-    </>
+    </NextUIProvider>
   )
 }

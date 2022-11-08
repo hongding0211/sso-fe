@@ -25,8 +25,6 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     }
   }, [])
 
-
-
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.code === 'Enter') {
       handleClickLogin()
@@ -73,7 +71,7 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
   function handleClickForget() {
     toast.error('开发中...')
   }
-4
+
   return (
     <>
       <p className='font-medium md:text-4xl text-zinc-900 hidden md:block dark:text-zinc-200'>登录</p>
