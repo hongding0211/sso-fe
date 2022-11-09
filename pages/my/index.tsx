@@ -51,6 +51,7 @@ export default function My() {
       <Head>
         <title>{currentMenuItem.title}</title>
         <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=375,initial-scale=1,user-scalable=no" />
       </Head>
       <Layout className='h-screen'>
         <Sider
@@ -92,7 +93,7 @@ export default function My() {
                   <Avatar size={32} className='cursor-pointer'>
                     {
                       userInfo?.avatar ?
-                        <img src={userInfo.avatar} alt='avatar'/> :
+                        <img src={userInfo.avatar} alt='avatar' className='object-cover'/> :
                         <IconUser />
                     }
                   </Avatar>

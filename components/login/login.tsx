@@ -3,7 +3,7 @@ import Requester from "../../services/requester";
 import {IPostApiLogin, IPostApiRegister} from "../../services/types";
 import {APIS} from "../../services/config";
 import toast from "react-hot-toast";
-import {Button, Input, Loading} from "@nextui-org/react";
+import {Button, Input, Loading, useInput} from "@nextui-org/react";
 import shajs from "sha.js";
 
 type ILogin = {
@@ -13,9 +13,23 @@ type ILogin = {
 }
 
 const Login: React.FunctionComponent<ILogin> = props =>  {
-  const [emailInput, setEmailInput] = useState(props.registeredData?.email || props.registeredData?.phone || '' )
   const [passwordInput, setPasswordInput] = useState('')
   const [pending, setPending] = useState(false)
+
+  const { value: emailInput, bindings } = useInput(props.registeredData?.email || props.registeredData?.phone || '')
+
+  const helper: {
+    color: "success" | "error" | "default" | "primary" | "secondary" | "warning" | undefined
+  } = React.useMemo(() => {
+    if (!emailInput)
+      return {
+        color: undefined,
+      };
+    const isValid = validateEmailPhone(emailInput);
+    return {
+      color: isValid ? "default" : "error",
+    };
+  }, [emailInput])
 
   const emailInputRef = createRef<HTMLInputElement>()
 
@@ -24,6 +38,10 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
       emailInputRef.current.focus()
     }
   }, [])
+
+  function validateEmailPhone(value: string) {
+    return value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i) || value.match(/^\d{11}$/)
+  }
 
   function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
     if (e.code === 'Enter') {
@@ -76,9 +94,22 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     <>
       <p className='font-medium md:text-4xl text-zinc-900 hidden md:block dark:text-zinc-200'>登录</p>
       <div onKeyDown={handleKeyDown} className='mb-8 mb:my-none'>
-        <Input label='邮箱 / 电话' value={emailInput} onChange={e => setEmailInput(e.target.value)} ref={emailInputRef} clearable fullWidth/>
-        <div className='mt-6'>
-          <Input label='密码' value={passwordInput} type='password' onChange={e => setPasswordInput(e.target.value)} clearable fullWidth/>
+        <div className='flex flex-col gap-y-4'>
+          <Input
+            {...bindings}
+            label='邮箱 / 电话'
+            ref={emailInputRef}
+            fullWidth
+            status={helper.color}
+            color={helper.color}
+          />
+          <Input
+            label='密码'
+            value={passwordInput}
+            type='password'
+            onChange={e => setPasswordInput(e.target.value)}
+            fullWidth
+          />
           <p className='text-sm text-zinc-600 underline cursor-pointer mt-3 dark:text-zinc-400' onClick={handleClickForget}>忘记密码</p>
         </div>
       </div>
