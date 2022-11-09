@@ -50,6 +50,7 @@ export default function My() {
     <>
       <Head>
         <title>{currentMenuItem.title}</title>
+        <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <Layout className='h-screen'>
         <Sider
