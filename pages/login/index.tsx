@@ -1,17 +1,17 @@
 import Head from "next/head";
-import Login from '../components/home/login'
-import Register from "../components/register/register";
+import Login from '../../components/home/login'
+import Register from "../../components/register/register";
 import {createTheme, Modal, NextUIProvider, Text} from "@nextui-org/react";
-import {useEffect, useRef, useState} from "react";
-import {IPostApiRegister, IPostApiValidate} from "../services/types";
+import React, {useEffect, useRef, useState} from "react";
+import {IPostApiRegister, IPostApiValidate} from "../../services/types";
 import Image from "next/image";
-import logo from '../public/logo.png'
+import logo from '../../public/logo.png'
 import useDarkMode from "use-dark-mode";
 import {useRouter} from "next/router";
-import Requester from "../services/requester";
-import {APIS} from "../services/config";
+import Requester from "../../services/requester";
+import {APIS} from "../../services/config";
 import {Message} from "@arco-design/web-react";
-import {useUserInfo} from "../hooks/user";
+import {useUserInfo} from "../../hooks/user";
 
 const lightTheme = createTheme({
   type: 'light',
@@ -89,6 +89,7 @@ export default function Home() {
     >
       <Head>
         <title>SSO 统一登录</title>
+        <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
       <div className='h-screen w-screen bg-bg_light dark:bg-bg_dark bg-cover flex justify-center items-center'>
         <div className='relative top-[-5vh] md:static md:top-none shadow-xl p-8 md:p-12 bg-white dark:bg-black m-6 w-full max-w-[450px] md:max-w-none rounded-xl flex flex-col justify-between md:flex-row md:items-center md:w-[893px] md:h-[552px] md:rounded-2xl'>
