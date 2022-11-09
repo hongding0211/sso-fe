@@ -32,7 +32,7 @@ export default function My() {
   useEffect(() => {
     if (userInfo === null) {
       Message.error('未登录')
-      router.push('/').then()
+      router.push('/login').then()
     }
   }, [userInfo])
 
@@ -43,7 +43,7 @@ export default function My() {
 
   function handleLogout() {
     localStorage.removeItem('auth-token')
-    router.push('/').then()
+    router.push('/login').then()
   }
 
   return (
