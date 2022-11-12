@@ -109,11 +109,13 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
     setPending(true)
 
     requester.post({
-      email,
-      phone,
-      name,
-      password: hashedPassword,
-      avatar,
+      body: {
+        email,
+        phone,
+        name,
+        password: hashedPassword,
+        avatar,
+      }
     }).then(v => {
       if (v.success) {
         toast.success('注册成功')

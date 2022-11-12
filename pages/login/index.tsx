@@ -60,7 +60,9 @@ export default function Home() {
     const requester = new Requester<IPostApiValidate>(APIS.POST_VALIDATE)
 
     requester.post({
-      ticket,
+      body: {
+        ticket,
+      },
     }).then(v => {
       if (v?.success === true && v?.data?.authToken) {
         Message.success('登录成功')

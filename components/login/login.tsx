@@ -64,11 +64,13 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
     const req = new Requester<IPostApiLogin>(APIS.POST_LOGIN)
     setPending(true)
     req.post({
-      email,
-      phone,
-      password: shajs('sha256')
-        .update(`${Math.floor(Date.now() / 60000) - 1}${hashedPassword}`)
-        .digest('hex'),
+      body: {
+        email,
+        phone,
+        password: shajs('sha256')
+          .update(`${Math.floor(Date.now() / 60000) - 1}${hashedPassword}`)
+          .digest('hex'),
+      }
     }).then(res => {
       if (!res.success || !res?.data ) {
         toast.error(res?.msg || '登录失败')

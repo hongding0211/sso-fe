@@ -20,7 +20,9 @@ export function useUserInfo(): [UserInfo | undefined | null, () => void] {
       const requester = new Requester<IGetApiUserInfo>(APIS.GET_USR_INFO)
 
       requester.get({
-        authToken,
+        params: {
+          authToken,
+        },
       }).then(v => {
         if (v?.success === true && v?.data) {
           setUser(v.data)
