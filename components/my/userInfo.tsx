@@ -92,6 +92,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
         onCancel={() => setShowEditAvatarModal(false)}
         onOk={handleConfirmEditAvatar}
         style={{maxWidth: '80vw'}}
+        footer={null}
       >
         <EditAvatar />
       </Modal>
@@ -102,8 +103,11 @@ const UserInfo: React.FC<IUserInfo> = props => {
         onCancel={() => setShowModifyPasswordModal(false)}
         onOk={handleConfirmModifyPassword}
         style={{maxWidth: '80vw'}}
+        footer={null}
       >
-        <ModifyPassword />
+        <ModifyPassword
+          onSuccess={() => setShowModifyPasswordModal(false)}
+        />
       </Modal>
 
       <Image.Preview
