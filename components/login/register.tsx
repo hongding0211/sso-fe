@@ -149,6 +149,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           fullWidth
           status={helper.color}
           color={helper.color}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 
@@ -157,6 +158,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           clearable
           label="用户名"
           onChange={e => setName(e.target.value)}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 
@@ -165,6 +167,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           clearable
           label="密码"
           onChange={e => setPassword(e.target.value)}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 

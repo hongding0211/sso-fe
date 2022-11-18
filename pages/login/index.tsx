@@ -12,6 +12,7 @@ import Requester from "../../services/requester";
 import {APIS} from "../../services/config";
 import {Message} from "@arco-design/web-react";
 import {useUserInfo} from "../../hooks/user";
+import ForgetPassword from "../../components/login/forgetPassword";
 
 const lightTheme = createTheme({
   type: 'light',
@@ -25,6 +26,7 @@ export default function Home() {
   const [showRegister, setShowRegister] = useState(false)
   const [registeredData, setRegisteredData] = useState<IPostApiRegister['IRes']['data'] | undefined>(undefined)
   const [showAboutModal, setShowAboutModal] = useState(false)
+  const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
   const clientURL = useRef('')
 
@@ -49,6 +51,10 @@ export default function Home() {
 
   function handleRegister() {
     setShowRegister(true)
+  }
+
+  function handleForgetPassword() {
+    setShowForgetPasswordModal(true)
   }
 
   function handleLoggedIn(ticket: string) {
@@ -113,7 +119,7 @@ export default function Home() {
             {
               showRegister ?
                 <Register onBack={handleRegisterBack} onRegistered={handleRegistered} /> :
-                <Login onRegister={handleRegister} onLoggedIn={handleLoggedIn} registeredData={registeredData} />
+                <Login onRegister={handleRegister} onForgetPassword={handleForgetPassword} onLoggedIn={handleLoggedIn} registeredData={registeredData} />
             }
           </div>
         </div>
@@ -144,6 +150,22 @@ export default function Home() {
               <Image src={logo} layout='intrinsic' alt='logo'/>
             </div>
           </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        open={showForgetPasswordModal}
+        blur
+        onClose={() => setShowForgetPasswordModal(false)}
+        css={{zIndex: 100}}
+      >
+        <Modal.Header justify='flex-start'>
+          <Text>重置密码</Text>
+        </Modal.Header>
+        <Modal.Body>
+          <ForgetPassword
+            onSuccess={() => setShowForgetPasswordModal(false)}
+          />
         </Modal.Body>
       </Modal>
     </NextUIProvider>

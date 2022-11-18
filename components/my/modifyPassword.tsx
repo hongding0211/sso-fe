@@ -73,14 +73,14 @@ const ModifyPassword: React.FC<IModifyPassword> = (props) => {
 
   function handleSendCode() {
     const requester = new Requester<IPostApiSendCode>(APIS.POST_SEND_CODE)
-    setSendCodeCD(sendCodeCD - 1)
     requester.post({
       params: {
         authToken: localStorage.getItem('auth-token') || ''
       }
     }).then(v => {
+      setSendCodeCD(sendCodeCD - 1)
       if (v.success) {
-        Message.success('发送成功')
+        Message.success('发送成功，请联系管理员获取验证码~')
       } else {
         return Promise.reject()
       }
@@ -90,13 +90,13 @@ const ModifyPassword: React.FC<IModifyPassword> = (props) => {
   }
 
   return (
-    <Space direction='vertical'>
-      <Space>
-        <Input value={code} onChange={v => setCode(v)} placeholder='6 位验证码'/>
-        <Button onClick={handleSendCode} disabled={sendCodeCD < 30}>重新发送 {sendCodeCD < 30 ? sendCodeCD : ''}</Button>
+    <Space direction='vertical' style={{width: '100%'}}>
+      <Input prefix='验证码' value={code} onChange={v => setCode(v)} autoComplete='new-password'/>
+      <Input prefix='新密码' value={password} onChange={v => setPassword(v)} type='password' autoComplete='new-password'/>
+      <Space className='mt-4'>
+        <Button onClick={handleSubmit} type='primary' loading={pending}>修改密码</Button>
+        <Button onClick={handleSendCode} disabled={sendCodeCD < 30} type='text'>重新发送验证码 {sendCodeCD < 30 ? `(${sendCodeCD})` : ''}</Button>
       </Space>
-      <Input value={password} onChange={v => setPassword(v)} placeholder='新密码' type='password'/>
-      <Button onClick={handleSubmit} type='primary' loading={pending} className='mt-4'>修改密码</Button>
     </Space>
   )
 }

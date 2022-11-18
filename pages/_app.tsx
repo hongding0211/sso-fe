@@ -10,12 +10,15 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Component {...pageProps} />
-      <Toaster toastOptions={{
-        style: {
-          color: darkMode.value ? 'white' : 'black',
-          background: darkMode.value ? '#232325' : 'white',
-        }
-      }}/>
+      <Toaster
+        toastOptions={{
+          style: {
+            color: darkMode.value ? 'white' : 'black',
+            background: darkMode.value ? '#232325' : 'white',
+          }
+        }}
+        containerStyle={{zIndex: 10000}}
+      />
     </>
   )
 }

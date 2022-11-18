@@ -8,6 +8,8 @@ export const APIS = {
   GET_USR_INFO: `${BASE_URL}/api/userinfo`,
   POST_MODIFY_PASSWORD: `${BASE_URL}/api/modifyPassword`,
   POST_SEND_CODE: `${BASE_URL}/api/sendCode`,
+  POST_FORGET_PASSWORD: `${BASE_URL}/api/forgetPassword`,
+  POST_RESET_PASSWORD: `${BASE_URL}/api/resetPassword`,
   POST_UPLOAD: `https://hong97.ltd/upload/`
 }
 

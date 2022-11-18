@@ -4,6 +4,7 @@ import {IconEdit} from "@arco-design/web-react/icon";
 import {UserInfo} from '../../hooks/user'
 import EditAvatar from "./editAvatar";
 import ModifyPassword from "./modifyPassword";
+import {useRouter} from "next/router";
 
 interface IUserInfo {
   userInfo?: UserInfo | null
@@ -32,6 +33,8 @@ const UserInfo: React.FC<IUserInfo> = props => {
   const [showModifyPasswordModal, setShowModifyPasswordModal] = useState(false)
   const [showAvatarPreview, setShowAvatarPreview] = useState(false)
 
+  const router = useRouter()
+
   function handleEditAvatar() {
     setShowEditAvatarModal(true)
   }
@@ -49,6 +52,12 @@ const UserInfo: React.FC<IUserInfo> = props => {
   function handleConfirmModifyPassword() {
     // TODO
     setShowModifyPasswordModal(false)
+  }
+
+  function handleSuccessModifyPassword() {
+    setShowModifyPasswordModal(false)
+    localStorage.removeItem('auth-token')
+    router.push('/login').then()
   }
 
   return (
@@ -106,7 +115,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
         footer={null}
       >
         <ModifyPassword
-          onSuccess={() => setShowModifyPasswordModal(false)}
+          onSuccess={handleSuccessModifyPassword}
         />
       </Modal>
 

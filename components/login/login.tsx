@@ -8,6 +8,7 @@ import shajs from "sha.js";
 
 type ILogin = {
   onRegister: () => void
+  onForgetPassword: () => void
   onLoggedIn: (ticket: string) => void
   registeredData?: IPostApiRegister['IRes']['data']
 }
@@ -89,7 +90,7 @@ const Login: React.FunctionComponent<ILogin> = props =>  {
   }
 
   function handleClickForget() {
-    toast.error('开发中...')
+    props.onForgetPassword()
   }
 
   return (

@@ -125,3 +125,27 @@ export interface IPostApiModifyPassword extends IApi {
     >
   IRes: IResponseBody<{}>
 }
+
+export interface IPostApiForgetPassword extends IApi {
+  IReq: IRequest<
+    undefined,
+    {
+      email?: string
+      phone?: string
+    }
+    >
+  IRes: IResponseBody<{}>
+}
+
+export interface IPostApiResetPassword extends IApi {
+  IReq: IRequest<
+    undefined,
+    {
+      email?: string
+      phone?: string
+      code: string
+      newPassword: string
+    }
+    >
+  IRes: IResponseBody<{}>
+}
