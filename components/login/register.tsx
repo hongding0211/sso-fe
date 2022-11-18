@@ -1,4 +1,4 @@
-import {Avatar, Button, Input, Loading, Spacer} from "@nextui-org/react"
+import {Avatar, Button, Input, Loading, Spacer, useInput} from "@nextui-org/react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faUpload, faUser} from "@fortawesome/free-solid-svg-icons"
 import React, {ChangeEvent, useRef, useState} from "react";
@@ -14,14 +14,32 @@ type IRegister = {
 }
 
 const Register: React.FunctionComponent<IRegister> = props =>  {
-  const [emailPhone, setEmailPhone] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [avatar, setAvatar] = useState('')
   const [uploading, setUploading] = useState(false)
   const [pending, setPending] = useState(false)
 
+  const { value: emailPhone, bindings } = useInput('')
+
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const helper: {
+    color: "success" | "error" | "default" | "primary" | "secondary" | "warning" | undefined
+  } = React.useMemo(() => {
+    if (!emailPhone)
+      return {
+        color: undefined,
+      };
+    const isValid = validateEmailPhone(emailPhone);
+    return {
+      color: isValid ? "default" : "error",
+    };
+  }, [emailPhone])
+
+  function validateEmailPhone(value: string) {
+    return value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i) || value.match(/^\d{11}$/)
+  }
 
   function handleUpload() {
     if (uploading) {
@@ -91,11 +109,13 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
     setPending(true)
 
     requester.post({
-      email,
-      phone,
-      name,
-      password: hashedPassword,
-      avatar,
+      body: {
+        email,
+        phone,
+        name,
+        password: hashedPassword,
+        avatar,
+      }
     }).then(v => {
       if (v.success) {
         toast.success('注册成功')
@@ -117,17 +137,19 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           className='py-2 px-3 flex items-center rounded-md hover:bg-zinc-100 hover:dark:bg-zinc-900 transition-hover duration-100 cursor-pointer mr-2'
           onClick={props.onBack}
         >
-          <FontAwesomeIcon icon={faChevronLeft}/>
+          <FontAwesomeIcon width={12} icon={faChevronLeft}/>
         </div>
         <p className='font-medium text-2xl text-zinc-900 dark:text-zinc-200'>注册</p>
       </div>
 
       <div className='flex flex-col'>
         <Input
-          value={emailPhone}
-          clearable
-          label="邮箱 / 电话"
-          onChange={e => setEmailPhone(e.target.value)}
+          {...bindings}
+          label='邮箱 / 电话'
+          fullWidth
+          status={helper.color}
+          color={helper.color}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 
@@ -136,6 +158,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           clearable
           label="用户名"
           onChange={e => setName(e.target.value)}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 
@@ -144,6 +167,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           clearable
           label="密码"
           onChange={e => setPassword(e.target.value)}
+          autoComplete='new-password'
         />
         <Spacer y={1}/>
 
@@ -155,8 +179,8 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
           <Spacer x={1}/>
           <div className='px-4 py-2 flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-800 cursor-pointer'
                onClick={handleUpload}>
-            <FontAwesomeIcon icon={faUpload}/>
-            <span className='ml-3 text-sm font-medium'>上传头像</span>
+            <FontAwesomeIcon width={18} icon={faUpload}/>
+            <div className='ml-3 text-sm font-medium'>上传头像</div>
           </div>
           {
             uploading &&

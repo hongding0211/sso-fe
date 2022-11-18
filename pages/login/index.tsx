@@ -1,6 +1,6 @@
 import Head from "next/head";
-import Login from '../../components/home/login'
-import Register from "../../components/register/register";
+import Login from '../../components/login/login'
+import Register from "../../components/login/register";
 import {createTheme, Modal, NextUIProvider, Text} from "@nextui-org/react";
 import React, {useEffect, useRef, useState} from "react";
 import {IPostApiRegister, IPostApiValidate} from "../../services/types";
@@ -12,6 +12,7 @@ import Requester from "../../services/requester";
 import {APIS} from "../../services/config";
 import {Message} from "@arco-design/web-react";
 import {useUserInfo} from "../../hooks/user";
+import ForgetPassword from "../../components/login/forgetPassword";
 
 const lightTheme = createTheme({
   type: 'light',
@@ -25,6 +26,7 @@ export default function Home() {
   const [showRegister, setShowRegister] = useState(false)
   const [registeredData, setRegisteredData] = useState<IPostApiRegister['IRes']['data'] | undefined>(undefined)
   const [showAboutModal, setShowAboutModal] = useState(false)
+  const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false)
 
   const clientURL = useRef('')
 
@@ -51,6 +53,10 @@ export default function Home() {
     setShowRegister(true)
   }
 
+  function handleForgetPassword() {
+    setShowForgetPasswordModal(true)
+  }
+
   function handleLoggedIn(ticket: string) {
     if (clientURL.current !== '') {
       window.location.href = `${clientURL.current}?${encodeURIComponent(`ticket=${ticket}`)}`
@@ -60,7 +66,9 @@ export default function Home() {
     const requester = new Requester<IPostApiValidate>(APIS.POST_VALIDATE)
 
     requester.post({
-      ticket,
+      body: {
+        ticket,
+      },
     }).then(v => {
       if (v?.success === true && v?.data?.authToken) {
         Message.success('登录成功')
@@ -90,6 +98,7 @@ export default function Home() {
       <Head>
         <title>SSO 统一登录</title>
         <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=375,initial-scale=1,user-scalable=no" />
       </Head>
       <div className='h-screen w-screen bg-bg_light dark:bg-bg_dark bg-cover flex justify-center items-center'>
         <div className='relative top-[-5vh] md:static md:top-none shadow-xl p-8 md:p-12 bg-white dark:bg-black m-6 w-full max-w-[450px] md:max-w-none rounded-xl flex flex-col justify-between md:flex-row md:items-center md:w-[893px] md:h-[552px] md:rounded-2xl'>
@@ -110,7 +119,7 @@ export default function Home() {
             {
               showRegister ?
                 <Register onBack={handleRegisterBack} onRegistered={handleRegistered} /> :
-                <Login onRegister={handleRegister} onLoggedIn={handleLoggedIn} registeredData={registeredData} />
+                <Login onRegister={handleRegister} onForgetPassword={handleForgetPassword} onLoggedIn={handleLoggedIn} registeredData={registeredData} />
             }
           </div>
         </div>
@@ -141,6 +150,22 @@ export default function Home() {
               <Image src={logo} layout='intrinsic' alt='logo'/>
             </div>
           </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        open={showForgetPasswordModal}
+        blur
+        onClose={() => setShowForgetPasswordModal(false)}
+        css={{zIndex: 100}}
+      >
+        <Modal.Header justify='flex-start'>
+          <Text>重置密码</Text>
+        </Modal.Header>
+        <Modal.Body>
+          <ForgetPassword
+            onSuccess={() => setShowForgetPasswordModal(false)}
+          />
         </Modal.Body>
       </Modal>
     </NextUIProvider>

@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
-import {Avatar, Button, Descriptions, Divider, Link, Modal, Skeleton, Space} from "@arco-design/web-react";
+import {Avatar, Button, Descriptions, Divider, Image, Link, Modal, Skeleton, Space} from "@arco-design/web-react";
 import {IconEdit} from "@arco-design/web-react/icon";
 import {UserInfo} from '../../hooks/user'
 import EditAvatar from "./editAvatar";
 import ModifyPassword from "./modifyPassword";
+import {useRouter} from "next/router";
 
 interface IUserInfo {
   userInfo?: UserInfo | null
@@ -30,6 +31,9 @@ const UserInfo: React.FC<IUserInfo> = props => {
 
   const [showEditAvatarModal, setShowEditAvatarModal] = useState(false)
   const [showModifyPasswordModal, setShowModifyPasswordModal] = useState(false)
+  const [showAvatarPreview, setShowAvatarPreview] = useState(false)
+
+  const router = useRouter()
 
   function handleEditAvatar() {
     setShowEditAvatarModal(true)
@@ -50,14 +54,20 @@ const UserInfo: React.FC<IUserInfo> = props => {
     setShowModifyPasswordModal(false)
   }
 
+  function handleSuccessModifyPassword() {
+    setShowModifyPasswordModal(false)
+    localStorage.removeItem('auth-token')
+    router.push('/login').then()
+  }
+
   return (
     <>
       <div className='m-6'>
         <Skeleton loading={!userInfo}>
-          <Space size={64} align='start'>
+          <div className='flex flex-col gap-y-12 sm:flex-row sm:gap-x-12'>
             <Space direction='vertical' align='center' size='medium'>
-              <Avatar size={96}>
-                <img src={userInfo?.avatar} alt='avatar'/>
+              <Avatar size={96} onClick={() => setShowAvatarPreview(true)} className='cursor-pointer'>
+                <img src={userInfo?.avatar} alt='avatar' className='object-cover'/>
               </Avatar>
               <Button
                 size='mini'
@@ -73,11 +83,11 @@ const UserInfo: React.FC<IUserInfo> = props => {
                 column={1}
                 title='用户信息'
                 data={descriptionsData}
-                style={{marginBottom: 20}}
-                labelStyle={{paddingRight: 36}}
+                style={{marginBottom: 16}}
+                labelStyle={{paddingRight: 24}}
               />
             }
-          </Space>
+          </div>
 
           <Divider/>
 
@@ -90,6 +100,8 @@ const UserInfo: React.FC<IUserInfo> = props => {
         visible={showEditAvatarModal}
         onCancel={() => setShowEditAvatarModal(false)}
         onOk={handleConfirmEditAvatar}
+        style={{maxWidth: '80vw'}}
+        footer={null}
       >
         <EditAvatar />
       </Modal>
@@ -99,9 +111,19 @@ const UserInfo: React.FC<IUserInfo> = props => {
         visible={showModifyPasswordModal}
         onCancel={() => setShowModifyPasswordModal(false)}
         onOk={handleConfirmModifyPassword}
+        style={{maxWidth: '80vw'}}
+        footer={null}
       >
-        <ModifyPassword />
+        <ModifyPassword
+          onSuccess={handleSuccessModifyPassword}
+        />
       </Modal>
+
+      <Image.Preview
+        src={userInfo?.avatar || ''}
+        visible={showAvatarPreview}
+        onVisibleChange={setShowAvatarPreview}
+      />
     </>
   )
 }
