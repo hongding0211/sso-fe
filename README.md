@@ -10,6 +10,10 @@
 
 ![screen1](static/iShot_2022-11-09_00.22.46.png)
 
+## 📄 Document
+
+[🔗 https://blog.hong97.ltd/sso/about](https://blog.hong97.ltd/sso/about)
+
 ## ✅ Getting Started
 
 - Build with Next.js
