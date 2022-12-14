@@ -72,12 +72,12 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
 
       const token = shajs('sha256').update(`${Math.floor(Date.now() / 600000)}${UPLOAD_SECRET}`).digest('hex')
 
-      fetch(`${APIS.POST_UPLOAD}?token=${token}`, {
+      fetch(`${APIS.POST_UPLOAD}?token=${token}&fixedWidth=200`, {
         method: 'POST',
         body: formData,
       }).then(v => v.json())
         .then(v => {
-          setAvatar(v?.url || '')
+          setAvatar(v?.compress?.fixedWidth || '')
         })
         .catch(() => {
           toast.error('文件上传失败')
