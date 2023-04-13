@@ -120,7 +120,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
       </Modal>
 
       <Image.Preview
-        src={userInfo?.avatar || ''}
+        src={userInfo?.avatar?.replace(/fixedWidth_\d+/, '100') || userInfo?.avatar || ''}
         visible={showAvatarPreview}
         onVisibleChange={setShowAvatarPreview}
       />
