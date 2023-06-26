@@ -52,6 +52,7 @@ export default function My() {
         <title>{currentMenuItem.title}</title>
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="viewport" content="width=375,initial-scale=1,user-scalable=no" />
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
       <Layout className='h-screen'>
         <Sider
