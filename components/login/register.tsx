@@ -89,7 +89,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
   }
 
   function handleRegister() {
-    if (!emailPhone || !name || !password || !avatar) {
+    if (!emailPhone || !name || !password) {
       toast.error('请填写所有字段')
       return
     }
@@ -172,10 +172,12 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
         <Spacer y={1}/>
 
         <div className='flex items-center'>
-          <Avatar
-            icon={!avatar ? <FontAwesomeIcon icon={faUser}/> : undefined}
-            src={avatar}
-          />
+          <div onClick={handleUpload}>
+            <Avatar
+              icon={!avatar ? <FontAwesomeIcon icon={faUser}/> : undefined}
+              src={avatar}
+            />
+          </div>
           <Spacer x={1}/>
           <div className='px-4 py-2 flex items-center rounded-xl bg-zinc-100 dark:bg-zinc-800 cursor-pointer'
                onClick={handleUpload}>

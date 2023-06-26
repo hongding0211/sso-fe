@@ -1,10 +1,13 @@
-import React, {useState} from 'react'
-import {Avatar, Button, Descriptions, Divider, Image, Link, Modal, Skeleton, Space} from "@arco-design/web-react";
+import React, {useCallback, useState} from 'react'
+import {Avatar, Button, Descriptions, Divider, Image, Link, Message, Modal, Skeleton, Space} from "@arco-design/web-react";
 import {IconEdit} from "@arco-design/web-react/icon";
 import {UserInfo} from '../../hooks/user'
 import EditAvatar from "./editAvatar";
 import ModifyPassword from "./modifyPassword";
 import {useRouter} from "next/router";
+import Requester from '../../services/requester';
+import { IPatchApiUserInfo } from '../../services/types'
+import { APIS } from '../../services/config';
 
 interface IUserInfo {
   userInfo?: UserInfo | null
@@ -43,12 +46,6 @@ const UserInfo: React.FC<IUserInfo> = props => {
     setShowModifyPasswordModal(true)
   }
 
-  function handleConfirmEditAvatar() {
-    // TODO
-    setShowEditAvatarModal(false)
-    props.onUpdate()
-  }
-
   function handleConfirmModifyPassword() {
     // TODO
     setShowModifyPasswordModal(false)
@@ -59,6 +56,26 @@ const UserInfo: React.FC<IUserInfo> = props => {
     localStorage.removeItem('auth-token')
     router.push('/login').then()
   }
+
+  const handleUpload = useCallback((filePath: string) => {
+    const requester = new Requester<IPatchApiUserInfo>(APIS.PATCH_USER_INFO)
+    requester.patch({
+      params: {
+        authToken: localStorage.getItem('auth-token') || '',
+      },
+      body: {
+        avatar: filePath, 
+      }
+    }).then(res => {
+      if (!res?.success) {
+        Message.error('修改失败')
+        return
+      }
+      Message.success('修改成功')
+      setShowEditAvatarModal(false)
+      props.onUpdate()
+    })
+  }, [props])
 
   return (
     <>
@@ -99,11 +116,10 @@ const UserInfo: React.FC<IUserInfo> = props => {
         title='编辑头像'
         visible={showEditAvatarModal}
         onCancel={() => setShowEditAvatarModal(false)}
-        onOk={handleConfirmEditAvatar}
-        style={{maxWidth: '80vw'}}
+        style={{maxWidth: '50vw'}}
         footer={null}
       >
-        <EditAvatar />
+        <EditAvatar onUpload={handleUpload}/>
       </Modal>
 
       <Modal
