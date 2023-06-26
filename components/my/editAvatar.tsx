@@ -9,7 +9,7 @@ interface IEditAvatar {
 const EditAvatar: React.FC<IEditAvatar> = (props) => {
   const { onUpload } = props
 
-  const [file, setFile] = useState()
+  const [file, setFile] = useState<any>()
 
   const handleClick = useCallback(() => {
     if (!file) {
@@ -69,7 +69,7 @@ const EditAvatar: React.FC<IEditAvatar> = (props) => {
     <Space direction='vertical' size='large'>
       <Upload
         fileList={file ? [file] : []}
-        onChange={(_, currentFile) => {
+        onChange={(_: any, currentFile: any) => {
           setFile({
             ...currentFile,
             url: URL.createObjectURL(currentFile.originFile),

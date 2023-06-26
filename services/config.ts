@@ -5,6 +5,7 @@ export const APIS = {
   POST_VALIDATE: `${BASE_URL}/api/validate`,
   POST_REGISTER: `${BASE_URL}/api/register`,
   GET_USR_INFO: `${BASE_URL}/api/userinfo`,
+  PATCH_USER_INFO: `${BASE_URL}/api/userinfo`,
   POST_MODIFY_PASSWORD: `${BASE_URL}/api/modifyPassword`,
   POST_SEND_CODE: `${BASE_URL}/api/sendCode`,
   POST_FORGET_PASSWORD: `${BASE_URL}/api/forgetPassword`,
