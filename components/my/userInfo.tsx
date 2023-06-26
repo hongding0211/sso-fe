@@ -84,7 +84,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
           <div className='flex flex-col gap-y-12 sm:flex-row sm:gap-x-12'>
             <Space direction='vertical' align='center' size='medium'>
               <Avatar size={96} onClick={() => setShowAvatarPreview(true)} className='cursor-pointer'>
-                <img src={userInfo?.avatar} alt='avatar' className='object-cover'/>
+                <img src={`${userInfo.avatar}?x-oss-process=image/resize,w_100`} alt='avatar' className='object-cover'/>
               </Avatar>
               <Button
                 size='mini'
