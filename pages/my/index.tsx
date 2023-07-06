@@ -94,7 +94,7 @@ export default function My() {
                   <Avatar size={32} className='cursor-pointer'>
                     {
                       userInfo?.avatar ?
-                        <img src={`${userInfo.avatar}?x-oss-process=image/resize,w_100`} alt='avatar' className='object-cover'/> :
+                        <img src={`${userInfo.avatar}?x-oss-process=image/resize,w_96`} alt='avatar' className='object-cover'/> :
                         <IconUser />
                     }
                   </Avatar>

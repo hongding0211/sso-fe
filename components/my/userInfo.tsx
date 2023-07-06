@@ -8,6 +8,7 @@ import {useRouter} from "next/router";
 import Requester from '../../services/requester';
 import { IPatchApiUserInfo } from '../../services/types'
 import { APIS } from '../../services/config';
+import ModifyName from './modifyName';
 
 interface IUserInfo {
   userInfo?: UserInfo | null
@@ -34,6 +35,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
 
   const [showEditAvatarModal, setShowEditAvatarModal] = useState(false)
   const [showModifyPasswordModal, setShowModifyPasswordModal] = useState(false)
+  const [showModifyNameModal, setShowModifyNameModal] = useState(false)
   const [showAvatarPreview, setShowAvatarPreview] = useState(false)
 
   const router = useRouter()
@@ -46,9 +48,17 @@ const UserInfo: React.FC<IUserInfo> = props => {
     setShowModifyPasswordModal(true)
   }
 
+  function handleModifyName() {
+    setShowModifyNameModal(true)
+  }
+
   function handleConfirmModifyPassword() {
     // TODO
     setShowModifyPasswordModal(false)
+  }
+
+  function handleConfirmModifyName() {
+    setShowModifyNameModal(false)
   }
 
   function handleSuccessModifyPassword() {
@@ -56,6 +66,11 @@ const UserInfo: React.FC<IUserInfo> = props => {
     localStorage.removeItem('auth-token')
     router.push('/login').then()
   }
+
+  const handleSuccessModifyName = useCallback(() => {
+    setShowModifyNameModal(false)
+    props.onUpdate() 
+  }, [])
 
   const handleUpload = useCallback((filePath: string) => {
     const requester = new Requester<IPatchApiUserInfo>(APIS.PATCH_USER_INFO)
@@ -84,7 +99,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
           <div className='flex flex-col gap-y-12 sm:flex-row sm:gap-x-12'>
             <Space direction='vertical' align='center' size='medium'>
               <Avatar size={96} onClick={() => setShowAvatarPreview(true)} className='cursor-pointer'>
-                <img src={`${userInfo?.avatar || ''}?x-oss-process=image/resize,w_100`} alt='avatar' className='object-cover'/>
+                <img src={`${userInfo?.avatar || ''}?x-oss-process=image/resize,w_288`} alt='avatar' className='object-cover'/>
               </Avatar>
               <Button
                 size='mini'
@@ -108,6 +123,7 @@ const UserInfo: React.FC<IUserInfo> = props => {
 
           <Divider/>
 
+          <Link onClick={handleModifyName}>修改用户名</Link>
           <Link onClick={handleModifyPassword}>修改密码</Link>
         </Skeleton>
       </div>
@@ -120,6 +136,20 @@ const UserInfo: React.FC<IUserInfo> = props => {
         footer={null}
       >
         <EditAvatar onUpload={handleUpload}/>
+      </Modal>
+
+      <Modal
+        title='修改用户名'
+        visible={showModifyNameModal}
+        onCancel={() => setShowModifyNameModal(false)}
+        onOk={handleConfirmModifyName}
+        style={{maxWidth: '80vw'}}
+        footer={null}
+      >
+        <ModifyName 
+          name={userInfo?.name || ''}
+          onSuccess={handleSuccessModifyName}
+        />
       </Modal>
 
       <Modal
