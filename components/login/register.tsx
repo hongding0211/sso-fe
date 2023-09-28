@@ -67,6 +67,53 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
       setAvatar('')
 
       // upload
+      const { name } = file
+      fetch('https://hong97.ltd/oss/upload/genKey', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fileName: name,
+          app: 'sso',
+          contentType: 'application/octet-stream',
+        })
+      }).then(res => res.json())
+        .then(res => {
+          if (!res?.success) {
+            toast.error('出现错误，请稍后再试')
+            return
+          }
+  
+          const {
+            fileName,
+            filePath,
+            url,
+          } = res?.data || {}
+
+          const fileToBeUploaded = new File([file], fileName, {
+            type: file.type,
+            lastModified: file.lastModified,
+          })
+  
+          fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/octet-stream'
+            },
+            body: fileToBeUploaded,
+          }).then(res => {
+            if (res.status !== 200) {
+              toast.error('上传错误')
+            }
+            setAvatar(filePath)
+          })
+        }).finally(() => {
+          setUploading(false)
+        })
+      return
+
+      // upload
       const formData = new FormData()
       formData.append('file', file)
 
