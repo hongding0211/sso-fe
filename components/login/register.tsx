@@ -96,7 +96,7 @@ const Register: React.FunctionComponent<IRegister> = props =>  {
             lastModified: file.lastModified,
           })
   
-          fetch(url, {
+          fetch(url.replace('http', 'https'), {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/octet-stream'
